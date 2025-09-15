@@ -2,3 +2,6 @@ lib
 bin
 pyvenv.cfg
 .DS_Store
+Scripts
+share
+bank_marketing_v01 copy.pkl
