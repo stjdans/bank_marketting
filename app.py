@@ -7,15 +7,24 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
-# 업로드 폴더 설정
-UPLOAD_FOLDER = 'uploads'
+is_anywhere = False
+
+if not is_anywhere:
+    # 업로드 폴더 설정
+    UPLOAD_FOLDER = 'uploads'
+    DATABASE_FOLDER = ''
+else:
+    # 파이썬 애니웨어 경로
+    UPLOAD_FOLDER = '/home/samedu/mysite/uploads'
+    DATABASE_FOLDER = '/home/samedu/mysite/'
+
 ALLOWED_EXTENSIONS = {'csv'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
 def get_connection():
-    return sqlite3.connect('bank_database.db')
+    return sqlite3.connect(DATABASE_FOLDER + 'bank_database.db')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -63,7 +72,8 @@ def upload_file():
         # 'file'은 form input의 name 속성과 일치해야 함
         file = request.files['file']
         if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)  # 보안 처리된 파일명
+            # filename = secure_filename(file.filename)  # 보안 처리된 파일명
+            filename = file.filename
             print('filename : ', filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             return '성공'
