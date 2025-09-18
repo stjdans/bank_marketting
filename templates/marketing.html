@@ -69,99 +69,34 @@
                         </tr>
                     </thead>
                     <tbody>
+                        
                         <!-- Placeholder Data -->
-                        <tr>
-                            <td>김민준</td>
-                            <td>010-1234-5678</td>
-                            <td>34</td>
-                            <td>개발자</td>
-                            <td>기혼</td>
-                            <td>대학교</td>
-                            <td>No</td>
-                            <td>5,000,000</td>
-                            <td>Yes</td>
-                            <td>No</td>
-                            <td>cellular</td>
-                            <td>5</td>
-                            <td>may</td>
-                            <td>261</td>
-                            <td>1</td>
-                            <td>-1</td>
-                            <td>0</td>
-                            <td>unknown</td>
-                            <td>no</td>
+                         {% for user in items %}
+                            <tr>
+                            <td>{{user[0]}}</td>
+                            <td>{{user[1]}}</td>
+                            <td>{{user[2]}}</td>
+                            <td>{{user[3]}}</td>
+                            <td>{{user[4]}}</td>
+                            <td>{{user[5]}}</td>
+                            <td>{{user[6]}}</td>
+                            <td>{{user[7]}}</td>
+                            <td>{{user[8]}}</td>
+                            <td>{{user[9]}}</td>
+                            <td>{{user[10]}}</td>
+                            <td>{{user[11]}}</td>
+                            <td>{{user[12]}}</td>
+                            <td>{{user[13]}}</td>
+                            <td>{{user[14]}}</td>
+                            <td>{{user[15]}}</td>
+                            <td>{{user[16]}}</td>
+                            <td>{{user[17]}}</td>
+                            <td>{{user[18]}}</td>
                             <td><span class="score-badge high">92.5%</span></td>
-                            <td><span class="status-badge sent">발송완료</span></td>
+                            <td><span class="status-badge sent">미발송</span></td>
                         </tr>
-                        <tr>
-                            <td>이서연</td>
-                            <td>010-2345-6789</td>
-                            <td>28</td>
-                            <td>마케터</td>
-                            <td>미혼</td>
-                            <td>대학교</td>
-                            <td>No</td>
-                            <td>2,500,000</td>
-                            <td>No</td>
-                            <td>No</td>
-                            <td>cellular</td>
-                            <td>11</td>
-                            <td>aug</td>
-                            <td>151</td>
-                            <td>2</td>
-                            <td>-1</td>
-                            <td>0</td>
-                            <td>unknown</td>
-                            <td>no</td>
-                            <td><span class="score-badge high">88.1%</span></td>
-                            <td><span class="status-badge pending">대기</span></td>
-                        </tr>
-                        <tr>
-                           <td>박현우</td>
-                            <td>010-3456-7890</td>
-                            <td>42</td>
-                            <td>자영업</td>
-                            <td>기혼</td>
-                            <td>고등학교</td>
-                            <td>No</td>
-                            <td>1,200,000</td>
-                            <td>Yes</td>
-                            <td>Yes</td>
-                            <td>telephone</td>
-                            <td>15</td>
-                            <td>may</td>
-                            <td>76</td>
-                            <td>1</td>
-                            <td>330</td>
-                            <td>1</td>
-                            <td>failure</td>
-                            <td>no</td>
-                            <td><span class="score-badge mid">76.3%</span></td>
-                            <td><span class="status-badge pending">대기</span></td>
-                        </tr>
-                         <tr>
-                            <td>최지아</td>
-                            <td>010-4567-8901</td>
-                            <td>25</td>
-                            <td>대학생</td>
-                            <td>미혼</td>
-                            <td>대학교</td>
-                            <td>No</td>
-                            <td>800,000</td>
-                            <td>No</td>
-                            <td>No</td>
-                            <td>cellular</td>
-                            <td>22</td>
-                            <td>jul</td>
-                            <td>198</td>
-                            <td>1</td>
-                            <td>-1</td>
-                            <td>0</td>
-                            <td>unknown</td>
-                            <td>no</td>
-                            <td><span class="score-badge mid">71.8%</span></td>
-                            <td><span class="status-badge pending">대기</span></td>
-                        </tr>
+                         {% endfor %}
+                 
                     </tbody>
                 </table>
             </div>

@@ -15,7 +15,11 @@
                 <div class="search-row">
                     <div class="search-item">
                         <label for="customer-name">고객 성함</label>
-                        <input type="text" id="customer-name" name="customer_name" class="form-control" placeholder="홍길동">
+                        {% if user %}
+                            <input type="text" id="customer-name" name="customer_name" class="form-control" value={{user[0]}}>
+                        {% else %}
+                            <input type="text" id="customer-name" name="customer_name" class="form-control" placeholder="홍길동">
+                        {% endif %}
                     </div>
                     <div class="search-item">
                         <label for="birth-date">생년월일</label>
@@ -29,18 +33,23 @@
                 </div>
             </div>
 
-            <div class="info-grid">
-                <div class="info-item"><label>계좌 잔고</label><span>5,000,000 원</span></div>
-                <div class="info-item"><label>직업</label><span>개발자</span></div>
-                <div class="info-item"><label>주택 대출</label><span>Yes</span></div>
-                <div class="info-item"><label>개인 대출</label><span>No</span></div>
-                <div class="info-item"><label>연락처</label><span>010-1234-5678</span></div>
-                <div class="info-item"><label>최근 통화(초)</label><span>261</span></div>
-                <div class="info-item"><label>이전 캠페인</label><span>성공</span></div>
-                <div class="info-item"><label>신용 상태</label><span>정상</span></div>
-                <div class="info-item"><label>교육수준</label><span>대학교 졸업</span></div>
-                <div class="info-item"><label>결혼상태</label><span>기혼</span></div>
-            </div>
+            {% if user %}
+                <div class="info-grid">
+                    <div class="info-item"><label>연락처</label><span>{{user[1]}}</span></div>
+                    <div class="info-item"><label>직업</label><span>{{user[3]}}</span></div>
+                    <div class="info-item"><label>결혼상태</label><span>{{user[4]}}</span></div>
+                    <div class="info-item"><label>교육수준</label><span>{{user[5]}}</span></div>
+                    <div class="info-item"><label>신용 상태</label><span>{{user[6]}}</span></div>
+                    <div class="info-item"><label>계좌 잔고(달러)</label><span>{{user[7]}}</span></div>
+                    <div class="info-item"><label>주택 대출</label><span>{{user[8]}}</span></div>
+                    <div class="info-item"><label>개인 대출</label><span>{{user[9]}}</span></div>
+                    <div class="info-item"><label>최근 통화(초)</label><span>{{user[14]}}</span></div>
+                    <div class="info-item"><label>이전 캠페인</label><span>{{user[17]}}</span></div>
+                </div>
+            {% else %}
+                <p>없니????</p>
+            {% endif %}
+            
         </form>
       </div>
     </div>
@@ -104,6 +113,22 @@
             alert('고객 성함과 생년월일을 모두 입력해주세요.');
             return;
         }
+
+        console.log('searchCustomer....')
+        window.location.href = '/loan?name=' + customerName + '&birth=' + birthDate
+    }
+
+    function excute() {
+        const customerName = document.getElementById('customer-name').value;
+        const birthDate = document.getElementById('birth-date').value;
+        
+        if (!customerName || !birthDate) {
+            alert('고객 성함과 생년월일을 모두 입력해주세요.');
+            return;
+        }
+
+        console.log('searchCustomer....')
+        window.location.href = '/loan'
         
         // 시뮬레이션: 실제 DB 조회 대신 랜덤 결과 생성
         const resultContainer = document.getElementById('assessment-result');
@@ -168,6 +193,7 @@
         }, 2000);
     }
 
+/*
     function render(){
       tbody.innerHTML = '';
       applicants.forEach(a => {
@@ -182,7 +208,7 @@
       });
     }
     render();
-
+*/
     // Show Modal with result
     function showResultModal(isApproved) {
         let content = '';
@@ -219,7 +245,7 @@
             modal.style.display = 'none';
         }
     });
-
+/*
     // --- Existing functionality (simplified for new structure) ---
     document.getElementById('assessAll').addEventListener('click', ()=>{
       if(applicants.length===0) return;
@@ -234,6 +260,7 @@
         else progressText.innerText = i + ' / ' + total + ' 처리중';
       }, 150);
     });
+*/
 </script>
 {% endblock %}
 

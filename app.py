@@ -1,6 +1,8 @@
-from flask import Flask, render_template, request, jsonify, send_file
 import os
 import pandas as pd
+import sqlite3
+
+from flask import Flask, render_template, request, jsonify, send_file, redirect, url_for
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -11,6 +13,9 @@ ALLOWED_EXTENSIONS = {'csv'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
+
+def get_connection():
+    return sqlite3.connect('bank_database.db')
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -24,115 +29,160 @@ def index():
 @app.route('/marketing')
 def marketing():
     """마케팅 분석 체험 페이지"""
+    filename = request.args.get('file')
+    print('마케팅 페이지 호출....', filename)
+    if filename:
+        df = pd.read_csv(os.path.join(UPLOAD_FOLDER, filename))
+        items = df.values.tolist()
+        print(items)
+
+        return render_template('marketing.html', items=items)
+    
     return render_template('marketing.html')
 
 @app.route('/loan')
 def loan():
     """대출 심사 분석 체험 페이지"""
+    print('대출 페이지 호출....')
+    name = request.args.get('name')
+    birth = request.args.get('birth')
+    
+    if name and birth:
+        print('name', name, ', birth', birth)
+        user = finduser(name, birth)
+        print('왜 안되지...', list(user[0]))
+        return render_template('loan.html', user=list(user[0]))
+    
     return render_template('loan.html')
 
-@app.route('/upload_marketing', methods=['POST'])
-def upload_marketing():
-    """마케팅 데이터 업로드 및 분석"""
-    if 'file' not in request.files:
-        return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+# 마케팅 파일 업로드
+@app.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    print('upload_file')
+    if request.method == 'POST':
+        # 'file'은 form input의 name 속성과 일치해야 함
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)  # 보안 처리된 파일명
+            print('filename : ', filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return '성공'
     
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
-    
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
-        
-        try:
-            # CSV 파일 읽기
-            df = pd.read_csv(filepath)
-            
-            # 간단한 분석 수행 (실제로는 더 복잡한 ML 분석)
-            analysis_result = {
-                'data_shape': df.shape,
-                'columns': df.columns.tolist(),
-                'summary': df.describe().to_dict(),
-                'segmentation': {
-                    'VIP': 23,
-                    'Regular': 54, 
-                    'New': 23
-                },
-                'predictions': {
-                    'growth': 15,
-                    'accuracy': 87
-                }
-            }
-            
-            return jsonify({
-                'success': True,
-                'message': '분석이 완료되었습니다.',
-                'data': analysis_result
-            })
-            
-        except Exception as e:
-            return jsonify({'error': f'파일 분석 중 오류가 발생했습니다: {str(e)}'}), 500
-        finally:
-            # 업로드된 파일 삭제 (선택사항)
-            if os.path.exists(filepath):
-                os.remove(filepath)
-    
-    return jsonify({'error': '지원하지 않는 파일 형식입니다.'}), 400
+    return '업로드 실패'
 
-@app.route('/upload_loan', methods=['POST'])
-def upload_loan():
-    """대출 데이터 업로드 및 분석"""
-    if 'file' not in request.files:
-        return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+def finduser(name, birth):
+    conn = get_connection()
+    cursor = conn.cursor()
+    # 이름으로 가져오기
+    # cursor.execute('SELECT * FROM users WHERE name LIKE ? AND phone = ', (name,))
+    cursor.execute('SELECT * FROM users WHERE name LIKE ? AND phone = ?', ('홍서연', '01099454336'))
+    user = cursor.fetchall()
+    print('find user : ', user)
+    return user
     
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+
+# @app.route('/upload_marketing', methods=['POST'])
+# def upload_marketing():
+#     """마케팅 데이터 업로드 및 분석"""
+#     if 'file' not in request.files:
+#         return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
     
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(filepath)
+#     file = request.files['file']
+#     if file.filename == '':
+#         return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+    
+#     if file and allowed_file(file.filename):
+#         filename = secure_filename(file.filename)
+#         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#         file.save(filepath)
         
-        try:
-            # CSV 파일 읽기
-            df = pd.read_csv(filepath)
+#         try:
+#             # CSV 파일 읽기
+#             df = pd.read_csv(filepath)
             
-            # 간단한 대출 리스크 분석 (실제로는 더 복잡한 ML 분석)
-            analysis_result = {
-                'data_shape': df.shape,
-                'columns': df.columns.tolist(),
-                'risk_distribution': {
-                    'high_risk': 12,
-                    'medium_risk': 23,
-                    'low_risk': 65
-                },
-                'approval_rate': 73,
-                'model_accuracy': 92,
-                'risk_factors': {
-                    'credit_score': 32,
-                    'debt_ratio': 28,
-                    'employment': 24,
-                    'others': 16
-                }
-            }
+#             # 간단한 분석 수행 (실제로는 더 복잡한 ML 분석)
+#             analysis_result = {
+#                 'data_shape': df.shape,
+#                 'columns': df.columns.tolist(),
+#                 'summary': df.describe().to_dict(),
+#                 'segmentation': {
+#                     'VIP': 23,
+#                     'Regular': 54, 
+#                     'New': 23
+#                 },
+#                 'predictions': {
+#                     'growth': 15,
+#                     'accuracy': 87
+#                 }
+#             }
             
-            return jsonify({
-                'success': True,
-                'message': '대출 리스크 분석이 완료되었습니다.',
-                'data': analysis_result
-            })
+#             return jsonify({
+#                 'success': True,
+#                 'message': '분석이 완료되었습니다.',
+#                 'data': analysis_result
+#             })
             
-        except Exception as e:
-            return jsonify({'error': f'파일 분석 중 오류가 발생했습니다: {str(e)}'}), 500
-        finally:
-            # 업로드된 파일 삭제 (선택사항)
-            if os.path.exists(filepath):
-                os.remove(filepath)
+#         except Exception as e:
+#             return jsonify({'error': f'파일 분석 중 오류가 발생했습니다: {str(e)}'}), 500
+#         finally:
+#             # 업로드된 파일 삭제 (선택사항)
+#             if os.path.exists(filepath):
+#                 os.remove(filepath)
     
-    return jsonify({'error': '지원하지 않는 파일 형식입니다.'}), 400
+#     return jsonify({'error': '지원하지 않는 파일 형식입니다.'}), 400
+
+# @app.route('/upload_loan', methods=['POST'])
+# def upload_loan():
+#     """대출 데이터 업로드 및 분석"""
+#     if 'file' not in request.files:
+#         return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+    
+#     file = request.files['file']
+#     if file.filename == '':
+#         return jsonify({'error': '파일이 선택되지 않았습니다.'}), 400
+    
+#     if file and allowed_file(file.filename):
+#         filename = secure_filename(file.filename)
+#         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+#         file.save(filepath)
+        
+#         try:
+#             # CSV 파일 읽기
+#             df = pd.read_csv(filepath)
+            
+#             # 간단한 대출 리스크 분석 (실제로는 더 복잡한 ML 분석)
+#             analysis_result = {
+#                 'data_shape': df.shape,
+#                 'columns': df.columns.tolist(),
+#                 'risk_distribution': {
+#                     'high_risk': 12,
+#                     'medium_risk': 23,
+#                     'low_risk': 65
+#                 },
+#                 'approval_rate': 73,
+#                 'model_accuracy': 92,
+#                 'risk_factors': {
+#                     'credit_score': 32,
+#                     'debt_ratio': 28,
+#                     'employment': 24,
+#                     'others': 16
+#                 }
+#             }
+            
+#             return jsonify({
+#                 'success': True,
+#                 'message': '대출 리스크 분석이 완료되었습니다.',
+#                 'data': analysis_result
+#             })
+            
+#         except Exception as e:
+#             return jsonify({'error': f'파일 분석 중 오류가 발생했습니다: {str(e)}'}), 500
+#         finally:
+#             # 업로드된 파일 삭제 (선택사항)
+#             if os.path.exists(filepath):
+#                 os.remove(filepath)
+    
+#     return jsonify({'error': '지원하지 않는 파일 형식입니다.'}), 400
 
 @app.route('/analyze_individual', methods=['POST'])
 def analyze_individual():
@@ -192,17 +242,19 @@ def calculate_risk_score(age, income, credit_score, loan_amount):
     
     return max(0, min(100, round(risk)))
 
+
+# 테스트 데이터 다운로드
 @app.route('/download_test_data')
 def download_test_data():
     """테스트 데이터 CSV 파일 다운로드"""
     try:
         # 절대 경로로 파일 경로 생성
-        file_path = os.path.join(app.root_path, 'uploads', 'bank_marketing_user.csv')
+        file_path = os.path.join(app.root_path, 'download', 'bank_marketing_user.csv')
         if os.path.exists(file_path):
             return send_file(file_path, as_attachment=True, download_name='bank_marketing_user.csv')
         else:
             # 상대 경로도 시도
-            file_path_relative = os.path.join('uploads', 'bank_marketing_user.csv')
+            file_path_relative = os.path.join('download', 'bank_marketing_user.csv')
             if os.path.exists(file_path_relative):
                 return send_file(file_path_relative, as_attachment=True, download_name='bank_marketing_user.csv')
             else:

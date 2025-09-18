@@ -139,8 +139,10 @@ function setupEventListeners() {
     });
 }
 
+
 // 파일 선택 핸들러
-function handleFileSelect(event) {
+// 마케팅 페이지에서 csv 파일 업로드 시 호출
+async function handleFileSelect(event) {
     const file = event.target.files[0];
     if (file) {
         const maxSize = 16 * 1024 * 1024; // 16MB
@@ -158,7 +160,27 @@ function handleFileSelect(event) {
         }
         
         console.log(`파일 선택됨: ${file.name} (${formatFileSize(file.size)})`);
+
+        // FormData 객체 생성
+        const formData = new FormData();
+        formData.append("file", file);
+
+        console.log('여기는 오니...')
+        try {
+            const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+            });
+
+            const result = await response.text();
+            console.log('완료...')
+            window.location.href = '/marketing?file=' + file.name;
+            // window.location.href = 'loan';
+        } catch (error) {
+            console.error("업로드 실패:", error);
+        }
     }
+
 }
 
 // 마케팅 데이터 업로드 핸들러
