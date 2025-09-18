@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}마케팅 분석 - 심심한 AI 마케팅{% endblock %}
+{% block content %}
+<div class="page-container marketing-page">
+    <div class="content-wrapper">
+        <!-- Left Column: Input Controls -->
+        <div class="control-panel">
+            <div class="control-section">
+                <h3 class="control-title"><i class="fa-solid fa-file-csv icon-accent"></i> 고객 데이터 입력 CSV</h3>
+                <div class="csv-upload-box">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p>파일을 드래그하거나 클릭하여 업로드</p>
+                    <span>파일 형식: CSV</span>
+                    <input type="file" id="csv-file" name="csv_file" accept=".csv">
+                </div>
+                <div id="file-info"></div>
+            </div>
+            <div class="control-section">
+                <h3 class="control-title"><i class="fa-solid fa-wallet icon-accent"></i> 마케팅 예산 입력</h3>
+                <div class="input-group">
+                    <input type="number" id="total-budget" name="total_budget" class="form-control" placeholder="총 예산을 입력하세요">
+                    <span class="input-unit">원</span>
+                </div>
+            </div>
+            <div class="control-section">
+                <h3 class="control-title"><i class="fa-solid fa-user-tag icon-accent"></i> 1인당 예산 입력</h3>
+                 <div class="input-group">
+                    <input type="number" id="cost-per-person" name="cost_per_person" class="form-control" placeholder="1인당 비용을 입력하세요">
+                    <span class="input-unit">원/인</span>
+                </div>
+            </div>
+             <div class="control-section result-section">
+                <h3 class="control-title"><i class="fa-solid fa-users icon-accent"></i> 마케팅 목표수</h3>
+                <p id="target-count">50 <span>명</span></p>
+            </div>
+        </div>
+
+        <!-- Right Column: Customer List -->
+        <div class="result-panel">
+            <div class="result-header">
+                <h3><i class="fa-solid fa-list-check icon-accent"></i> 캠페인 가능성 높은 고객 리스트</h3>
+                <button class="btn btn-send-sms"><i class="fa-solid fa-comment-sms"></i> 문자 발송</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>이름<br><small>name</small></th>
+                            <th>연락처<br><small>hp/tel</small></th>
+                            <th>나이<br><small>age</small></th>
+                            <th>직업<br><small>job</small></th>
+                            <th>결혼상태<br><small>marital</small></th>
+                            <th>교육수준<br><small>education</small></th>
+                            <th>신용불량<br><small>default</small></th>
+                            <th>잔액<br><small>balance</small></th>
+                            <th>주택대출<br><small>housing</small></th>
+                            <th>개인대출<br><small>loan</small></th>
+                            <th>연락방식<br><small>contact</small></th>
+                            <th>연락일<br><small>day</small></th>
+                            <th>연락월<br><small>month</small></th>
+                            <th>통화시간(초)<br><small>duration</small></th>
+                            <th>캠페인횟수<br><small>campaign</small></th>
+                            <th>경과일<br><small>pdays</small></th>
+                            <th>이전연락횟수<br><small>previous</small></th>
+                            <th>이전결과<br><small>poutcome</small></th>
+                            <th>예금가입<br><small>deposit</small></th>
+                            <th>성공률<br><small>success rate</small></th>
+                            <th>발송여부<br><small>sent status</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Placeholder Data -->
+                        <tr>
+                            <td>김민준</td>
+                            <td>010-1234-5678</td>
+                            <td>34</td>
+                            <td>개발자</td>
+                            <td>기혼</td>
+                            <td>대학교</td>
+                            <td>No</td>
+                            <td>5,000,000</td>
+                            <td>Yes</td>
+                            <td>No</td>
+                            <td>cellular</td>
+                            <td>5</td>
+                            <td>may</td>
+                            <td>261</td>
+                            <td>1</td>
+                            <td>-1</td>
+                            <td>0</td>
+                            <td>unknown</td>
+                            <td>no</td>
+                            <td><span class="score-badge high">92.5%</span></td>
+                            <td><span class="status-badge sent">발송완료</span></td>
+                        </tr>
+                        <tr>
+                            <td>이서연</td>
+                            <td>010-2345-6789</td>
+                            <td>28</td>
+                            <td>마케터</td>
+                            <td>미혼</td>
+                            <td>대학교</td>
+                            <td>No</td>
+                            <td>2,500,000</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>cellular</td>
+                            <td>11</td>
+                            <td>aug</td>
+                            <td>151</td>
+                            <td>2</td>
+                            <td>-1</td>
+                            <td>0</td>
+                            <td>unknown</td>
+                            <td>no</td>
+                            <td><span class="score-badge high">88.1%</span></td>
+                            <td><span class="status-badge pending">대기</span></td>
+                        </tr>
+                        <tr>
+                           <td>박현우</td>
+                            <td>010-3456-7890</td>
+                            <td>42</td>
+                            <td>자영업</td>
+                            <td>기혼</td>
+                            <td>고등학교</td>
+                            <td>No</td>
+                            <td>1,200,000</td>
+                            <td>Yes</td>
+                            <td>Yes</td>
+                            <td>telephone</td>
+                            <td>15</td>
+                            <td>may</td>
+                            <td>76</td>
+                            <td>1</td>
+                            <td>330</td>
+                            <td>1</td>
+                            <td>failure</td>
+                            <td>no</td>
+                            <td><span class="score-badge mid">76.3%</span></td>
+                            <td><span class="status-badge pending">대기</span></td>
+                        </tr>
+                         <tr>
+                            <td>최지아</td>
+                            <td>010-4567-8901</td>
+                            <td>25</td>
+                            <td>대학생</td>
+                            <td>미혼</td>
+                            <td>대학교</td>
+                            <td>No</td>
+                            <td>800,000</td>
+                            <td>No</td>
+                            <td>No</td>
+                            <td>cellular</td>
+                            <td>22</td>
+                            <td>jul</td>
+                            <td>198</td>
+                            <td>1</td>
+                            <td>-1</td>
+                            <td>0</td>
+                            <td>unknown</td>
+                            <td>no</td>
+                            <td><span class="score-badge mid">71.8%</span></td>
+                            <td><span class="status-badge pending">대기</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
+

@@ -1,0 +1,17 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=ssm
+Group=www-data
+WorkingDirectory=/home/ssm/flask_app/flask_login
+ExecStart=/usr/bin/gunicorn \
+          --access-logfile - \
+          --workers 4 \
+          --bind unix:/run/gunicorn.sock \
+          app:app
+
+[Install]
+WantedBy=multi-user.target

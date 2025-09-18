@@ -1,12 +1,85 @@
-<!doctype html>
-<html lang="ko">
-    <head>
-        <meta charset="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>대출 심사 - 관리자 화면</title>
-    </head>
-    <body>
-        <div><a href='page1'>페이지1</a></div>
-        <div><a href='page2'>페이지2</a></div>    
-    </body>
-</html>
+{% extends "base.html" %}
+{% block title %}Welcome to 심심한 AI 마케팅{% endblock %}
+{% block content %}
+<div class="index-page">
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <h2 class="hero-title">
+                    데이터 속에서 길을 잃으셨나요?<br>
+                    <span class="gradient-text">심심한 AI</span>가 당신의 비즈니스 나침반이 되어 드립니다.
+                </h2>
+                <p class="hero-description">
+                    "심심한 AI 마케팅"은 복잡한 데이터를 명쾌한 인사이트로 전환하여<br>
+                    마케팅과 핵심 의사결정을 쉽고 빠르게 할 수 있도록 돕는 AI 데이터 서비스입니다.
+                </p>
+                <div class="hero-buttons">
+                    <a href="{{ url_for('marketing') }}" class="btn btn-primary">마케팅 분석 체험하기 <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="{{ url_for('loan') }}" class="btn btn-secondary">의사결정 체험하기 <i class="fa-solid fa-arrow-right"></i></a>
+                    <a href="#" class="btn btn-custom" onclick="openCustomModal()"><span class="btn-text">커스텀 의뢰</span> <i class="fa-solid fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <div class="container">
+            <div class="section-title">
+                <h3>주요 기능</h3>
+                <p>AI를 통해 데이터 분석의 새로운 차원을 경험하세요.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-bullseye"></i></div>
+                    <h4>타겟 마케팅 최적화</h4>
+                    <p>고객 데이터를 분석하여 캠페인 반응 가능성이 가장 높은 고객 그룹을 정확히 예측하고 추천합니다.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fa-solid fa-gavel"></i></div>
+                    <h4>신속한 의사결정 지원</h4>
+                    <p>대출 심사와 같은 주요 업무에서 AI 분석을 통해 리스크를 줄이고 빠르고 일관된 결정을 내릴 수 있습니다.</p>
+                </div>
+                <div class="feature-card">
+                     <div class="feature-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                    <h4>직관적인 데이터 시각화</h4>
+                    <p>복잡한 분석 결과를 누구나 쉽게 이해할 수 있는 리포트와 대시보드로 제공하여 빠른 인사이트를 얻게 합니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- 커스텀 의뢰 모달 -->
+<div id="customModal" class="custom-modal-overlay">
+    <div class="custom-modal-content">
+        <button class="custom-modal-close" onclick="closeCustomModal()">&times;</button>
+        <img src="{{ url_for('static', filename='img/card.png') }}" alt="커스텀 의뢰 카드" class="custom-modal-image">
+    </div>
+</div>
+
+<script>
+function openCustomModal() {
+    document.getElementById('customModal').style.display = 'flex';
+}
+
+function closeCustomModal() {
+    document.getElementById('customModal').style.display = 'none';
+}
+
+// 모달 외부 클릭 시 닫기
+document.getElementById('customModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCustomModal();
+    }
+});
+
+// ESC 키로 모달 닫기
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCustomModal();
+    }
+});
+
+</script>
+{% endblock %}
+

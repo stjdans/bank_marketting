@@ -1,0 +1,12 @@
+[Unit]
+Description=Flask Application
+After=network.target
+
+[Service]
+User=ssm
+WorkingDirectory=/home/ssm/flask_app/flask_login
+Environment="PATH=/home/ssm/flask_app/venv/bin"
+ExecStart=/home/ssm/flask_app/venv/bin/python app.py
+
+[Install]
+WantedBy=multi-user.target
