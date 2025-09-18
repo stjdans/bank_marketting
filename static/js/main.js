@@ -64,12 +64,13 @@ function initializeMarketingCalculator() {
 
 // 마케팅 목표수 계산
 function calculateMarketingTarget() {
+    console.log('calculateMarketingTarget....')
     const totalBudgetInput = document.getElementById('total-budget');
     const costPerPersonInput = document.getElementById('cost-per-person');
     const targetCountElement = document.getElementById('target-count');
     
     if (!totalBudgetInput || !costPerPersonInput || !targetCountElement) return;
-    
+
     const totalBudget = parseFloat(totalBudgetInput.value) || 0;
     const costPerPerson = parseFloat(costPerPersonInput.value) || 0;
     
@@ -122,11 +123,26 @@ function loadStoredValues() {
     }
 }
 
+function loadStoredata() {
+    try {
+        const stored = localStorage.getItem('marketingBudget');
+        if (stored) {
+            const data = JSON.parse(stored);
+            return data
+        }
+
+        return null
+    } catch (error) {
+        console.error('로컬스토리지 불러오기 실패:', error);
+    }
+}
+
 // 이벤트 리스너 설정
 function setupEventListeners() {
     // 파일 입력 변화 감지
     const fileInputs = document.querySelectorAll('input[type="file"]');
     fileInputs.forEach(input => {
+        input.addEventListener('click', clickFileSelect);
         input.addEventListener('change', handleFileSelect);
     });
     
@@ -139,10 +155,28 @@ function setupEventListeners() {
     });
 }
 
+function clickFileSelect(event) {
+    console.log('clickFileSelect...')
+    const totalBudgetInput = document.getElementById('total-budget');
+    const costPerPersonInput = document.getElementById('cost-per-person');
+    const targetCountElement = document.getElementById('target-count');
+    
+    if (!totalBudgetInput || !costPerPersonInput || !targetCountElement) return;
+
+    const totalBudget = parseFloat(totalBudgetInput.value) || 0;
+    const costPerPerson = parseFloat(costPerPersonInput.value) || 0;
+
+    if (totalBudget == 0 || costPerPerson == 0 ) {
+        event.preventDefault()
+        alert('마케팅 예산과 1인당 예산을 입력하세요.')
+        return
+    } 
+}
 
 // 파일 선택 핸들러
 // 마케팅 페이지에서 csv 파일 업로드 시 호출
 async function handleFileSelect(event) {
+    console.log("handleFileSelect/.....")
     const file = event.target.files[0];
     if (file) {
         const maxSize = 16 * 1024 * 1024; // 16MB
@@ -174,7 +208,9 @@ async function handleFileSelect(event) {
 
             const result = await response.text();
             console.log('완료...')
-            window.location.href = '/marketing?file=' + file.name;
+            data = loadStoredata()
+            targetCount = data.targetCount
+            window.location.href = '/marketing?file=' + file.name + '&count=' + targetCount;
             // window.location.href = 'loan';
         } catch (error) {
             console.error("업로드 실패:", error);
@@ -462,6 +498,7 @@ function validateIndividualData(data) {
 
 // 알림 표시
 function showAlert(message, type = 'info') {
+    console.log('showAlert....')
     // Bootstrap 알림 생성
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;

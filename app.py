@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 
+# 파이썬 에니웨어의 경우 경로가 다르기때문에 플래그 사용 
 is_anywhere = False
 
 if not is_anywhere:
