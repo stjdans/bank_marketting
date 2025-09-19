@@ -16,14 +16,18 @@
                     <div class="search-item">
                         <label for="customer-name">고객 성함</label>
                         {% if user %}
-                            <input type="text" id="customer-name" name="customer_name" class="form-control" value={{user[0]}}>
+                            <input type="text" id="customer-name" name="customer_name" class="form-control" value="{{ user[0] }}">
                         {% else %}
                             <input type="text" id="customer-name" name="customer_name" class="form-control" placeholder="홍길동">
                         {% endif %}
                     </div>
                     <div class="search-item">
-                        <label for="birth-date">생년월일</label>
-                        <input type="text" id="birth-date" name="birth_date" class="form-control" placeholder="YYYY-MM-DD">
+                        <label for="birth-date">연락처</label>
+                        {% if user %}
+                            <input type="text" id="birth-date" name="birth_date" class="form-control" value="{{ user[1] }}">
+                        {% else %}
+                            <input type="text" id="birth-date" name="birth_date" class="form-control" placeholder="010-123-4567">
+                        {% endif %}
                     </div>
                     <div class="search-button">
                         <button type="button" class="btn btn-search-large" onclick="searchCustomer()">
@@ -35,7 +39,7 @@
 
             {% if user %}
                 <div class="info-grid">
-                    <div class="info-item"><label>연락처</label><span>{{user[1]}}</span></div>
+                    <div class="info-item"><label>나이</label><span>{{user[2]}}</span></div>
                     <div class="info-item"><label>직업</label><span>{{user[3]}}</span></div>
                     <div class="info-item"><label>결혼상태</label><span>{{user[4]}}</span></div>
                     <div class="info-item"><label>교육수준</label><span>{{user[5]}}</span></div>
@@ -47,7 +51,7 @@
                     <div class="info-item"><label>이전 캠페인</label><span>{{user[17]}}</span></div>
                 </div>
             {% else %}
-                <p>없니????</p>
+    
             {% endif %}
             
         </form>
@@ -87,13 +91,6 @@
 
 <script>
     // Initial sample data
-    const sample = [
-      {name:'김유진', contact:'010-1234-5678', balance:3500000, loan_available:'Y'},
-      {name:'박서준', contact:'010-2345-6789', balance:1200000, loan_available:'N'},
-      {name:'최지훈', contact:'010-3456-7890', balance:9800000, loan_available:'Y'},
-      {name:'조아름', contact:'010-4567-8901', balance:450000, loan_available:'N'}
-    ];
-
     const tbody = document.querySelector('#listTable tbody');
     const bar = document.getElementById('bar');
     const progressText = document.getElementById('progressText');
@@ -102,33 +99,30 @@
     const modalBody = document.getElementById('modal-body');
     const modalCloseBtn = document.getElementById('modal-close-btn');
 
-    let applicants = sample.slice();
-
     // 고객 조회 함수
     function searchCustomer() {
         const customerName = document.getElementById('customer-name').value;
-        const birthDate = document.getElementById('birth-date').value;
+        const phone = document.getElementById('birth-date').value;
         
-        if (!customerName || !birthDate) {
+        if (!customerName || !phone) {
             alert('고객 성함과 생년월일을 모두 입력해주세요.');
             return;
         }
 
-        console.log('searchCustomer....')
-        window.location.href = '/loan?name=' + customerName + '&birth=' + birthDate
+        console.log('searchCustomer....');
+        window.location.href = '/loan?name=' + customerName + '&phone=' + phone;
     }
 
-    function excute() {
+    function predict_loan() {
         const customerName = document.getElementById('customer-name').value;
-        const birthDate = document.getElementById('birth-date').value;
+        const phone = document.getElementById('birth-date').value;
         
-        if (!customerName || !birthDate) {
-            alert('고객 성함과 생년월일을 모두 입력해주세요.');
+        if (!customerName || !phone) {
+            alert('고객 성함과 연락처를 모두 입력해주세요.');
             return;
         }
 
-        console.log('searchCustomer....')
-        window.location.href = '/loan'
+        console.log('predict_loan....');
         
         // 시뮬레이션: 실제 DB 조회 대신 랜덤 결과 생성
         const resultContainer = document.getElementById('assessment-result');
@@ -140,100 +134,68 @@
                 <p>고객 정보를 조회하고 있습니다...</p>
             </div>
         `;
-        
-        // 2초 후 결과 표시 (실제로는 DB 조회 시간)
-        setTimeout(() => {
-            const randomResult = Math.random();
-            let resultHtml = '';
-            
-            if (randomResult < 0.1) {
-                // 데이터 조회 실패 (10% 확률)
-                resultHtml = `
-                    <div class="result-card result-error">
-                        <div class="result-icon">
-                            <i class="fa-solid fa-triangle-exclamation"></i>
-                        </div>
-                        <div class="result-content">
-                            <h3 class="result-title">데이터 조회에 실패했습니다</h3>
-                            <p class="result-description">${customerName} 고객님의 정보를 찾을 수 없습니다. 정확한 성함과 생년월일을 입력해주세요.</p>
-                        </div>
-                    </div>
-                `;
-            } else if (randomResult < 0.6) {
-                // 대출 승인 (50% 확률)
-                resultHtml = `
-                    <div class="result-card result-success">
-                        <div class="result-icon">
-                            <i class="fa-solid fa-check-circle"></i>
-                        </div>
-                        <div class="result-content">
-                            <h3 class="result-title">축하합니다!</h3>
-                            <p class="result-description">${customerName} 고객님은 대출 가능합니다</p>
-                            <div class="result-status success">YES</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                // 대출 거절 (40% 확률)
-                resultHtml = `
-                    <div class="result-card result-failure">
-                        <div class="result-icon">
-                            <i class="fa-solid fa-times-circle"></i>
-                        </div>
-                        <div class="result-content">
-                            <h3 class="result-title">죄송합니다!</h3>
-                            <p class="result-description">${customerName} 고객님은 대출이 불가능합니다</p>
-                            <div class="result-status failure">NO</div>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            resultContainer.innerHTML = resultHtml;
-        }, 2000);
+
+        // FormData 객체 생성
+        const formData = new FormData();
+        formData.append("name", customerName);
+        formData.append("phone", phone);
+
+        fetch("/eval_loan", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('서버 응답 : ', data)
+            prob = data['result']
+            console.log(prob)
+            show_eval_loan(prob, customerName)
+        }).catch(error => {
+            console.error(error)
+        });
     }
 
-/*
-    function render(){
-      tbody.innerHTML = '';
-      applicants.forEach(a => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${a.name}</td>
-            <td>${a.contact}</td>
-            <td>${a.balance.toLocaleString()}</td>
-            <td><span class="loan-status ${a.loan_available === 'Y' ? 'yes' : 'no'}">${a.loan_available}</span></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    render();
-*/
-    // Show Modal with result
-    function showResultModal(isApproved) {
-        let content = '';
-        if (isApproved) {
-            content = `
-                <div class="result-icon approved"><i class="fa-solid fa-check-circle"></i></div>
-                <h3 class="result-title approved">대출 승인</h3>
-                <p class="result-description">AI 심사 결과, 해당 고객은 대출 승인 기준을 충족합니다.</p>
+    function show_eval_loan(prob, customerName) {
+        const randomResult = prob
+        let resultHtml = '';
+        const resultContainer = document.getElementById('assessment-result');
+
+        if (randomResult > 0.5) {
+            // 대출 승인
+            resultHtml = `
+                <div class="result-card result-success">
+                    <div class="result-icon">
+                        <i class="fa-solid fa-check-circle"></i>
+                    </div>
+                    <div class="result-content">
+                        <h3 class="result-title">축하합니다!</h3>
+                        <p class="result-description">${customerName} 고객님은 대출 가능합니다</p>
+                        <div class="result-status success">YES</div>
+                    </div>
+                </div>
             `;
         } else {
-            content = `
-                <div class="result-icon rejected"><i class="fa-solid fa-times-circle"></i></div>
-                <h3 class="result-title rejected">대출 거절</h3>
-                <p class="result-description">AI 심사 결과, 해당 고객은 대출 승인 기준을 충족하지 못합니다.</p>
+            // 대출 거절
+            resultHtml = `
+                <div class="result-card result-failure">
+                    <div class="result-icon">
+                        <i class="fa-solid fa-times-circle"></i>
+                    </div>
+                    <div class="result-content">
+                        <h3 class="result-title">죄송합니다!</h3>
+                        <p class="result-description">${customerName} 고객님은 대출이 불가능합니다</p>
+                        <div class="result-status failure">NO</div>
+                    </div>
+                </div>
             `;
         }
-        modalBody.innerHTML = content;
-        modal.style.display = 'flex';
+        
+        resultContainer.innerHTML = resultHtml;
     }
 
     // Event Listeners
     checkBtn.addEventListener('click', () => {
-        // Simulate a random result for demonstration
-        const isApproved = Math.random() > 0.5;
-        showResultModal(isApproved);
+        predict_loan();
     });
 
     modalCloseBtn.addEventListener('click', () => {
@@ -245,22 +207,6 @@
             modal.style.display = 'none';
         }
     });
-/*
-    // --- Existing functionality (simplified for new structure) ---
-    document.getElementById('assessAll').addEventListener('click', ()=>{
-      if(applicants.length===0) return;
-      let i=0; progressText.innerText='심사중...';
-      const total = applicants.length;
-      const timer = setInterval(()=>{
-        applicants[i].loan_available = Math.random() > 0.4 ? 'Y' : 'N'; // Simulate assessment
-        render();
-        i++;
-        bar.style.width = Math.round((i/total)*100) + '%';
-        if(i>=total){ clearInterval(timer); progressText.innerText='심사 완료'; }
-        else progressText.innerText = i + ' / ' + total + ' 처리중';
-      }, 150);
-    });
-*/
 </script>
 {% endblock %}
 

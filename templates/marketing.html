@@ -38,7 +38,7 @@
         <!-- Right Column: Customer List -->
         <div class="result-panel">
             <div class="result-header">
-                <h3><i class="fa-solid fa-list-check icon-accent"></i> 캠페인 가능성 높은 고객 리스트</h3>
+                <h3><i class="fa-solid fa-list-check icon-accent"></i> 캠페인 가능성 높은 고객 리스트 (예/적금 가입)</h3>
                 <button class="btn btn-send-sms"><i class="fa-solid fa-comment-sms"></i> 문자 발송</button>
             </div>
             <div class="table-container">
@@ -63,7 +63,6 @@
                             <th>경과일<br><small>pdays</small></th>
                             <th>이전연락횟수<br><small>previous</small></th>
                             <th>이전결과<br><small>poutcome</small></th>
-                            <th>예금가입<br><small>deposit</small></th>
                             <th>성공률<br><small>success rate</small></th>
                             <th>발송여부<br><small>sent status</small></th>
                         </tr>
@@ -91,8 +90,7 @@
                             <td>{{user[15]}}</td>
                             <td>{{user[16]}}</td>
                             <td>{{user[17]}}</td>
-                            <td>{{user[18]}}</td>
-                            <td><span class="score-badge high">92.5%</span></td>
+                            <td><span class="score-badge high">{{user[19]}}%</span></td>
                             <td><span class="status-badge sent">미발송</span></td>
                         </tr>
                          {% endfor %}
